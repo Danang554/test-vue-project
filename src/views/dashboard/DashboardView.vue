@@ -307,6 +307,12 @@ async function handleSaveCategory(payload) {
 
           <div class="space-y-2 text-xs">
             <div class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span class="text-slate-500 dark:text-slate-400">Target Backend</span>
+              <span class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-[11px]" :title="healthStore.backendUrl">
+                {{ healthStore.backendHost }}
+              </span>
+            </div>
+            <div class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-slate-800">
               <span class="text-slate-500 dark:text-slate-400">Framework</span>
               <span class="font-semibold text-slate-800 dark:text-slate-200">Golang (Gin Gonic)</span>
             </div>

@@ -107,6 +107,32 @@ Untuk mempermudah pengujian, terdapat tombol pintas 1-klik di halaman Login:
 
 ---
 
+## ⚙️ Konfigurasi Environment Dinamis (.env)
+
+Port server Frontend dan domain/URL Backend dapat dikonfigurasi secara dinamis melalui file `.env`:
+
+```env
+# Port Server Frontend (Vite)
+# Ubah nilai ini jika ingin menjalankan FE di port lain (misal: 3000, 8080, dsb)
+VITE_PORT=5173
+
+# Domain / Target URL Backend (Golang REST API)
+# Contoh: http://127.0.0.1:8080 atau http://localhost:8080 atau https://api.domainanda.com
+VITE_BACKEND_URL=http://127.0.0.1:8080
+
+# Opsional: Direct base URL jika tidak ingin menggunakan Vite Dev Proxy
+VITE_API_BASE_URL=
+
+# Judul Aplikasi
+VITE_APP_TITLE=Golang API Frontend Tester
+```
+
+Ketika nilai di `.env` diubah:
+1. `vite.config.js` secara otomatis menyesuaikan port frontend (`server.port`) dan target proxy backend (`server.proxy`).
+2. Tampilan Frontend (Sidebar, Dashboard, dan API Explorer) secara dinamis menampilkan hostname dan port backend yang sedang aktif.
+
+---
+
 ## 🚀 Cara Menjalankan
 
 ### 1. Jalankan Backend Project Terlebih Dahulu

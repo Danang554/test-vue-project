@@ -101,7 +101,7 @@ const router = createRouter({
   },
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore()
   const toast = useToastStore()
 
@@ -115,22 +115,20 @@ router.beforeEach((to, from, next) => {
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    return next({
+    return {
       name: 'login',
       query: { redirect: to.fullPath !== '/' ? to.fullPath : undefined },
-    })
+    }
   }
 
   if (guestOnly && authStore.isAuthenticated) {
-    return next({ name: 'dashboard' })
+    return { name: 'dashboard' }
   }
 
   if (requiresAdmin && !authStore.isAdmin) {
     toast.warning('Access denied: Administrator privileges required.')
-    return next({ name: 'dashboard' })
+    return { name: 'dashboard' }
   }
-
-  next()
 })
 
 export default router

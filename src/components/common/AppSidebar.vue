@@ -162,9 +162,11 @@ function isActive(path) {
           </div>
 
           <div class="text-[11px] text-slate-400 space-y-1">
-            <div class="flex justify-between">
-              <span>Port:</span>
-              <span class="font-mono text-slate-300">8080 (Gin)</span>
+            <div class="flex justify-between items-center">
+              <span>Target BE:</span>
+              <span class="font-mono text-slate-300 truncate max-w-[120px]" :title="healthStore.backendUrl">
+                {{ healthStore.backendHost }}
+              </span>
             </div>
             <div class="flex justify-between items-center">
               <span>Database:</span>

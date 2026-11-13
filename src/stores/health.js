@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { healthApi } from '@/api/health'
+import { getBackendUrl, getBackendHost } from '@/api/client'
 
 export const useHealthStore = defineStore('health', () => {
   const isOnline = ref(null) // null = unknown, true = online, false = offline
@@ -9,6 +10,9 @@ export const useHealthStore = defineStore('health', () => {
   const latency = ref(0)
   const lastChecked = ref(null)
   const checking = ref(false)
+
+  const backendUrl = computed(() => getBackendUrl())
+  const backendHost = computed(() => getBackendHost())
 
   async function checkHealth() {
     checking.value = true
@@ -42,6 +46,8 @@ export const useHealthStore = defineStore('health', () => {
     latency,
     lastChecked,
     checking,
+    backendUrl,
+    backendHost,
     checkHealth,
   }
 })

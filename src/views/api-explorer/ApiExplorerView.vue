@@ -1,7 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import apiClient from '@/api/client'
+import { useHealthStore } from '@/stores/health'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+
+const healthStore = useHealthStore()
 import {
   Code2,
   Play,
@@ -562,7 +565,7 @@ function getMethodBadge(method) {
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors duration-200">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
           <Code2 class="w-6 h-6" />
@@ -573,6 +576,11 @@ function getMethodBadge(method) {
             Test and verify all 31 endpoints implemented in the Golang backend with real-time response inspection.
           </p>
         </div>
+      </div>
+
+      <div class="flex items-center gap-2 self-start sm:self-auto px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+        <span class="text-slate-400">Target BE:</span>
+        <span class="font-mono font-semibold text-indigo-600 dark:text-indigo-400">{{ healthStore.backendUrl }}</span>
       </div>
     </div>
 

@@ -1,7 +1,38 @@
 import axios from 'axios'
 
+// Helper untuk membaca Backend URL dinamis dari .env
+export const getBackendUrl = () => {
+  return (
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    'http://127.0.0.1:8080'
+  )
+}
+
+// Helper untuk membaca hostname/domain target backend
+export const getBackendHost = () => {
+  try {
+    const url = new URL(getBackendUrl())
+    return url.host || getBackendUrl()
+  } catch {
+    return getBackendUrl().replace(/^https?:\/\//, '')
+  }
+}
+
+// Menentukan baseURL Axios
+// Di mode development dengan Vite dev server proxy:
+// - Jika VITE_API_BASE_URL kosong, gunakan relative path '' agar request diarahkan ke proxy Vite (bebas CORS).
+// - Jika VITE_API_BASE_URL diisi secara eksplisit, gunakan URL tersebut.
+// Di mode production: gunakan VITE_BACKEND_URL atau VITE_API_BASE_URL.
+const resolveBaseUrl = () => {
+  if (import.meta.env.DEV) {
+    return import.meta.env.VITE_API_BASE_URL || ''
+  }
+  return import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || ''
+}
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '',
+  baseURL: resolveBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
