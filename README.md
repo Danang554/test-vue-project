@@ -113,11 +113,16 @@ Port server Frontend dan domain/URL Backend dapat dikonfigurasi secara dinamis m
 
 ```env
 # Port Server Frontend (Vite)
-# Ubah nilai ini jika ingin menjalankan FE di port lain (misal: 3000, 8080, dsb)
+# Ubah nilai ini jika ingin menjalankan FE di port lain (misal: 3000, 5173, 8000)
 VITE_PORT=5173
 
-# Domain / Target URL Backend (Golang REST API)
-# Contoh: http://127.0.0.1:8080 atau http://localhost:8080 atau https://api.domainanda.com
+# Port Server Production (Nginx) jika menggunakan Docker Compose profile 'prod'
+VITE_PROD_PORT=80
+
+# Domain / Target URL Backend
+# - Lokal di Windows Host: http://127.0.0.1:8080
+# - Di dalam Docker Desktop: otomatis terkonfigurasi ke http://host.docker.internal:8080
+#   (atau bisa diisi host container seperti http://test-golang-api:8080 atau https://api.domainanda.com)
 VITE_BACKEND_URL=http://127.0.0.1:8080
 
 # Opsional: Direct base URL jika tidak ingin menggunakan Vite Dev Proxy
@@ -133,16 +138,70 @@ Ketika nilai di `.env` diubah:
 
 ---
 
-## 🚀 Cara Menjalankan
+## 🪵 Error Logging Frontend
+
+Error khusus pada aplikasi Frontend (Vue component errors, unhandled promise rejections, runtime JS errors) dicatat secara otomatis ke file log di folder `logs/` tanpa mengganggu atau mencampur error dari Backend Golang.
+
+- **Lokasi File**: `logs/fe-YYYY-MM-DD.log`
+- **Format Log**:
+  ```text
+  [2026-11-13 11:05:42] local.ERROR: Cannot read properties of undefined (reading 'title') {"component":"TodoModal","url":"http://localhost:5173/todos"}
+  [stacktrace]
+  TypeError: Cannot read properties of undefined...
+  ```
+- **Silent & Non-Blocking**: Menggunakan `navigator.sendBeacon` sehingga tidak mempengaruhi performa UI atau pengalaman pengguna.
+- **Log Management Ready**: Siap dikonsumsi langsung oleh aplikasi log viewer / collector (Grafana Promtail, Filebeat, Datadog agent, atau tail log biasa).
+
+---
+
+## 🐳 Menjalankan dengan Docker Desktop
+
+Project telah dilengkapi `Dockerfile` multi-stage dan `compose.yaml` yang siap dijalankan langsung di Docker Desktop.
+
+### 1. Mode Development / Testing (Rekomendasi)
+Mode ini menjalankan Vite dev server di dalam container dengan fitur **Hot-Module Replacement (HMR)** dan volume mount ke folder `logs/` di host:
+
+```bash
+# Build dan jalankan container di background
+docker compose up -d --build
+
+# Cek status container
+docker compose ps
+
+# Cek live logs container
+docker compose logs -f frontend
+
+# Hentikan container
+docker compose down
+```
+Akses aplikasi melalui browser di `http://localhost:5173` (atau sesuai `VITE_PORT` di `.env`).
+
+> [!TIP]
+> **Koneksi ke Backend Golang di Docker Desktop**:
+> Container Frontend menggunakan `host.docker.internal:8080` sehingga dapat terhubung secara otomatis ke backend Golang, baik saat backend dijalankan via Docker Compose (`test-golang-api`) maupun via terminal lokal (`go run cmd/api/main.go`).
+
+### 2. Mode Production (Nginx Multi-Stage)
+Jika ingin menguji build statis production yang disajikan oleh web server Nginx berkinerja tinggi:
+
+```bash
+# Jalankan container production (Nginx di port 80)
+docker compose --profile prod up -d --build frontend-prod
+
+# Hentikan container production
+docker compose --profile prod down
+```
+Akses aplikasi melalui browser di `http://localhost:80` (atau sesuai `VITE_PROD_PORT` di `.env`).
+
+---
+
+## 🚀 Cara Menjalankan Secara Lokal (Tanpa Docker)
 
 ### 1. Jalankan Backend Project Terlebih Dahulu
 Pastikan database MySQL aktif dan backend Project dijalankan di port 8080
 
 ### 2. Jalankan Frontend Vue SPA
-Buka terminal baru di folder frontend:
+Buka terminal di folder project:
 ```bash
-cd "C:\Test Project\Vue\test-vue-project"
-
 # Install dependencies (jika belum)
 npm install
 

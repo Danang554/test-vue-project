@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useToastStore } from '@/stores/toast'
+import { logFrontendError } from '@/utils/logger'
 
 import MainLayout from '@/layouts/MainLayout.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
@@ -129,6 +130,11 @@ router.beforeEach((to, from) => {
     toast.warning('Access denied: Administrator privileges required.')
     return { name: 'dashboard' }
   }
+})
+
+// Tangkap error navigasi atau kegagalan load chunk komponen di router
+router.onError((error) => {
+  logFrontendError(error, { type: 'router_error' })
 })
 
 export default router

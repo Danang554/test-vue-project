@@ -19,16 +19,15 @@ export const getBackendHost = () => {
   }
 }
 
-// Menentukan baseURL Axios
-// Di mode development dengan Vite dev server proxy:
-// - Jika VITE_API_BASE_URL kosong, gunakan relative path '' agar request diarahkan ke proxy Vite (bebas CORS).
-// - Jika VITE_API_BASE_URL diisi secara eksplisit, gunakan URL tersebut.
-// Di mode production: gunakan VITE_BACKEND_URL atau VITE_API_BASE_URL.
+// Menentukan baseURL Axios:
+// - Jika VITE_API_BASE_URL diisi secara eksplisit, gunakan URL tersebut (misal akses direct ke external domain).
+// - Jika kosong, gunakan relative path '' agar request diarahkan ke proxy FE (Vite dev server / Nginx reverse proxy),
+//   sehingga bebas CORS dan kompatibel di dalam maupun di luar Docker Desktop.
 const resolveBaseUrl = () => {
-  if (import.meta.env.DEV) {
-    return import.meta.env.VITE_API_BASE_URL || ''
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
   }
-  return import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || ''
+  return ''
 }
 
 const apiClient = axios.create({
